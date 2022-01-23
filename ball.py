@@ -1,43 +1,62 @@
+### BALL.PY = encompasses everything to do with the ball, 
+# including the collision detection across the entirity of the game, 
+# and the draw and update methods
 
+# various imports are used to gather data from different parts of the game for calculations
 from base import Base
 from setup import *
 from brick import Brick
-import math
 
-class Ball:
-    radius = 5
+class Ball: # main class that is called
+    
+    # defines some starting variables that define the look, feel, speed of the ball, and also defines where the ball starts
+    radius = 7.5
     color = (255,255,255)
+    startingX = WINDOW_WIDTH / 2
+    startingY = 550
+    speed = 0.4
     
-    
-    def __init__(self, x, y):
-        self.position = pygame.Vector2(x, y)
-        self.velocity = pygame.Vector2(0, 0.5)
+    def __init__(self): # initialization of changing variables
+        self.position = pygame.Vector2(self.startingX, self.startingY) # where is the ball located? these are the coordinates
+        self.velocity = pygame.Vector2(0, self.speed) # what speed is the ball moving at? in which direction?
+        self.isDead = False # bool that is used to store information about if the ball has hit the floor, and if action has been taken after the ball has hit the floor
+        self.lives = 4 # counter of how many lives are left, editable
+        self.timer = 0 # timer var used to temporarily pause the movement of the ball
+        self.scoreCounter = 0 # the score counter
+        
 
-    def ballWindow_EdgeCollision(self):
+    def ballWindow_EdgeCollision(self): # this function checks to see if the ball is hitting the edges of the window
 
+        # defining the sides of the ball using some clever math tricks
         ballLeft = self.position.x - self.radius
         ballRight = self.position.x + self.radius
         ballTop = self.position.y - self.radius
         ballBottom = self.position.y + self.radius
 
+        # if the ball is hitting the right side of the window
         if ballRight > WINDOW_WIDTH:
             if self.velocity.x > 0:
                 self.velocity.x *= -1
+                # reflect velocity
 
+        # if the ball is hitting the left side of the window
         if ballLeft < 0:
             if self.velocity.x < 0:
                 self.velocity.x *= -1
+                #reflect velocity
 
-        if ballBottom > WINDOW_HEIGHT:
-            if self.velocity.y > 0:
-                self.velocity.y *= -1
+        # if the ball is hitting the bottom side of the window
+        if ballTop > WINDOW_HEIGHT:
+            self.isDead = True
+            # the dead status is turned true, which triggers a chain of events later on
 
         if ballTop < 0:
             if self.velocity.y < 0:
                 self.velocity.y *= -1
+                #reflect velocity
 
     
-    def entity_SweepCollision(self, entity):
+    def entity_SweepCollision(self, entity): # collision detection that checks to see if a collision is possible, and does many collision related calculations
 
         normal = pygame.Vector2() # zero vector
 
@@ -132,7 +151,7 @@ class Ball:
         
         return normal, hitTime
 
-    def sweptBroadphaseBox(self, delta_time):
+    def sweptBroadphaseBox(self, delta_time): # creates box around the ball, used for collision detection purposes
         min_x = min(self.position.x, self.position.x + self.velocity.x * delta_time) - self.radius
         min_y = min(self.position.y, self.position.y + self.velocity.y * delta_time) - self.radius
         max_x = max(self.position.x, self.position.x + self.velocity.x * delta_time) + self.radius
@@ -140,33 +159,31 @@ class Ball:
         #global screen
         return pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
 
-    def Entity_EdgeCollision(self, base, bricks, deltaTime):
+    def Entity_EdgeCollision(self, base, bricks, deltaTime): # checks to directly see if the edges of two objects are colliding
+        # sets variables for convienience
         broadphaseBox = self.sweptBroadphaseBox(deltaTime)
         baseBox = pygame.Rect(base.position.x, base.position.y, base.width, base.height)
 
-        collisionType = None
+        collisionType = None # defines the collision type
         
+        # checks to see if the ball is directly colliding with the base, and if true, sets the collision type accordingly
         if broadphaseBox.colliderect(baseBox):
             collisionNormal, collisionTime = self.entity_SweepCollision(base)
             if collisionTime < 1:
-                collisionType = Base
+                collisionType = Base # collision type: base
         else:
             collisionNormal, collisionTime = pygame.Vector2(), 1
 
-        if collisionTime >= 1:
-            for row in bricks:
-                keepSearching = True
-                for brick in row:
-                    brickBox = pygame.Rect(brick.position.x, brick.position.y, brick.width, brick.height)
-                    if broadphaseBox.colliderect(brickBox):
-                        collisionNormal, collisionTime = self.entity_SweepCollision(brick)
-                        if collisionTime < 1:
-                            row.remove(brick)
-                            collisionType = Brick
-                            keepSearching = False
-                            break
-                if not keepSearching:
-                    break
+        if collisionTime >= 1: # otherwise, it's likely a collision with a brick: takes according measure                
+            for brick in bricks:
+                brickBox = pygame.Rect(brick.position.x, brick.position.y, brick.width, brick.height)
+                if broadphaseBox.colliderect(brickBox):
+                    collisionNormal, collisionTime = self.entity_SweepCollision(brick)
+                    if collisionTime < 1:
+                        bricks.remove(brick) # removes brick from list
+                        collisionType = Brick # sets collision type to brick
+                        self.scoreCounter += 1 # adds a point to the score
+                        break
             else:
                 collisionNormal, collisionTime = pygame.Vector2(), 1
 
@@ -174,7 +191,7 @@ class Ball:
         self.position += self.velocity * collisionTime * deltaTime
         remainingTime = 1 - collisionTime
 
-        if collisionType == Base:
+        if collisionType == Base: # reflect velocity if hit on base
             if collisionNormal.x != 0:
                 self.velocity.x *= -1
 
@@ -188,21 +205,48 @@ class Ball:
                 normal = collisionNormal.rotate(centerPosDistance * 10)
                 self.velocity.reflect_ip(normal)
 
-        elif collisionType == Brick:
+        elif collisionType == Brick: # reflects ball if hits on brick
             self.velocity.reflect_ip(collisionNormal)
 
         self.position += self.velocity * remainingTime * deltaTime
         
-    def update(self, deltaTime, base, bricks):
-        self.Entity_EdgeCollision(base, bricks, deltaTime)
-        self.ballWindow_EdgeCollision()
+    def reset(self): # function that resets the ball's position, called when game starts, when new level starts, and in update when isDead is true
+        self.position = pygame.Vector2(self.startingX, self.startingY)
+        self.velocity = pygame.Vector2(0, self.speed)
+        self.timer = 0 # resets timer
+        # resets everything (position, velocity, timer)
     
-    def draw(self, window):
+    def update(self, deltaTime, base, bricks): # updates all relevant info
+        self.timer += deltaTime
+        
+        if self.isDead == True:
+            self.lives -= 1
+            self.reset()
+            self.isDead = False
+            return DEADEVENT
+
+        if self.timer > 2500:   
+            self.Entity_EdgeCollision(base, bricks, deltaTime)
+            self.ballWindow_EdgeCollision()
+    
+    def draw(self, window): # draws ball and score on screen
         pygame.draw.circle(
             window,
             self.color, 
             (self.position.x, self.position.y), 
             self.radius,
         )
+        self.drawLivesRemaining(window)
+    
+    
+    def drawLivesRemaining(self, window): # score counter in bottom right
+        
+        for i in range(self.lives - 1) :#subtracts one from the lives count because it shows how many balls you have left, not the internal counter
+            pygame.draw.circle(
+                window,
+                self.color, 
+                ((WINDOW_WIDTH - 80) - i * 20, WINDOW_HEIGHT - 25), 
+                self.radius,
+            )
 
         
