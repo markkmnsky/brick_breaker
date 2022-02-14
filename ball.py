@@ -14,7 +14,7 @@ class Ball: # main class that is called
     color = (255,255,255)
     startingX = WINDOW_WIDTH / 2
     startingY = 550
-    speed = 0.4
+    speed = 0.325
     
     def __init__(self): # initialization of changing variables
         self.position = pygame.Vector2(self.startingX, self.startingY) # where is the ball located? these are the coordinates
@@ -197,8 +197,8 @@ class Ball: # main class that is called
 
 
             # vertical collision
-            if collisionNormal.y != 0:
-                baseCenterPos = base.position.x + base.width /2
+            if collisionNormal.y != 0: # this does the 
+                baseCenterPos = base.position.x + base.width /2 
                 ballCenterPos = self.position.x
                 centerPosDistance = (ballCenterPos - baseCenterPos)/(base.width / 2)
 
