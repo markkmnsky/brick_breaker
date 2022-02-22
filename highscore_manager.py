@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### HIGHSCORE_MANAGER.PY = deals with the process of saving and reading scores to high_scores.json 
 from setup import *
 

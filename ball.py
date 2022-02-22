@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### BALL.PY = encompasses everything to do with the ball, 
 # including the collision detection across the entirity of the game, 
 # and the draw and update methods

@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### MENU.PY = the main menu screen and scene,
 # and displays lines of text using font and font size defined in SETUP.PY 
 

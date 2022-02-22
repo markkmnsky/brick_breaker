@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### BASE.PY = encompasses everything to do with the base,
 # mainly the movement of the base when the scroll wheel is moved
 # the collision detection of when the base hits the edge of the screen

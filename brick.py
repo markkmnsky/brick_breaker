@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### BRICK.PY = encompasses everything to do with the base, 
 # mainly the variables surrounding size and color,
 # and the draw method + __repr__ functionality which simplifies code later on#

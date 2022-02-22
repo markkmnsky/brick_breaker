@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### SETUP.PY = this file's purpose is to initialize Pygame and some basic variables used across every file. 
 # This is helpful because it reduces unneccessary code, as we need to initialize Pygame in every file. 
 # It also allows for a convinient location to store fixed variables like the screen size.

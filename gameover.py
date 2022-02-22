@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### GAMEOVER.PY = the gameover screen and scene,
 # calls for the score data to be fetched via GameOverInit().returnListScores()
 # and displays the score data using font and font size defined in SETUP.PY

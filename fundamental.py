@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### FUNDAMENTAL.PY = the main game logic and scene, 
 # holds the information of the brick placement in the levels
 # initializes and controls the different parts of the game (brick, base, ball)

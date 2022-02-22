@@ -1,3 +1,5 @@
+###### © Mark Kaminsky 2022. All rights reserved.
+
 ### MAIN.PY also known as GAME_RUN-THIS-FILE.PY = this file is the backbone of the game
 # This is the central peice of code that calls and stems out all of the various files 
 # Creates the main while loop that the name runs in, and creates the window in which the program runs in
