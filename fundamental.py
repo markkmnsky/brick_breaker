@@ -15,7 +15,7 @@ from highscore_manager import GameOverInit
 
 #defining static var of how many rows and columns there are in the game, used to help draw the bricks on the screen
 LEVEL_ROWS = 9
-LEVEL_COLUMNS = 8
+LEVEL_COLUMNS = 7
 
 # levels
 LEVEL_1 = [
